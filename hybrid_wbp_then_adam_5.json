@@ -1,0 +1,7 @@
+{
+  "seed": 5,
+  "mode": "wbp_then_adam",
+  "switch_epoch": 29,
+  "val_acc": 0.837,
+  "sharpness": 511.71726373117417
+}

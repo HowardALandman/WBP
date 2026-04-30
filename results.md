@@ -598,3 +598,242 @@ Sharpness crossed 4σ at N=10. WBP-K=1 produced a flatter loss surface than Adam
 | 6σ | ~21 | ~11 |
 
 All projections assume d̄ and s remain at their N=10 values.
+
+---
+
+## Robustness Round 3: Seeds 8–19 (N=22 total)
+
+Twelve additional seeds (8–19) complete the third robustness batch. All 22 seeds are analysed jointly below.
+
+### Per-Seed Results (all 22 seeds)
+
+| Seed | Adam val acc | WBP-K=1 val acc | Diff | Adam sharpness | WBP-K=1 sharpness |
+|---|---|---|---|---|---|
+| 42 | 0.8266 | 0.8378 | +0.0112 ▲ | 854.50 | 551.29 |
+| 0  | 0.8300 | 0.8351 | +0.0051 ▲ | 880.87 | 537.62 |
+| 7  | 0.8285 | 0.8327 | +0.0042 ▲ | 955.30 | 602.50 |
+| 123 | 0.8269 | 0.8355 | +0.0086 ▲ | 1046.31 | 616.59 |
+| 1  | 0.8319 | 0.8328 | +0.0009 ▲ | 872.88 | 640.62 |
+| 2  | 0.8321 | 0.8344 | +0.0023 ▲ | 1048.21 | 663.79 |
+| 3  | 0.8344 | 0.8299 | −0.0045 ▼ | 1326.65 | 639.14 |
+| 4  | 0.8295 | 0.8255 | −0.0040 ▼ | 811.32 | 770.13 |
+| 5  | 0.8366 | 0.8415 | +0.0049 ▲ | 862.45 | 528.90 |
+| 6  | 0.8279 | 0.8273 | −0.0006 ▼ | 1126.33 | 600.56 |
+| 8  | 0.8261 | 0.8349 | +0.0088 ▲ | 872.64 | 556.55 |
+| 9  | 0.8263 | 0.8273 | +0.0010 ▲ | 1078.71 | 462.95 |
+| 10 | 0.8342 | 0.8344 | +0.0002 ▲ | 884.28 | 791.49 |
+| 11 | 0.8240 | 0.8385 | +0.0145 ▲ | 973.23 | 632.29 |
+| 12 | 0.8335 | 0.8269 | −0.0066 ▼ | 1199.89 | 610.38 |
+| 13 | 0.8299 | 0.8401 | +0.0102 ▲ | 1061.93 | 755.11 |
+| 14 | 0.8371 | 0.8312 | −0.0059 ▼ | 979.63 | 620.78 |
+| 15 | 0.8296 | 0.8344 | +0.0048 ▲ | 983.07 | 566.64 |
+| 16 | 0.8270 | 0.8353 | +0.0083 ▲ | 816.30 | 650.35 |
+| 17 | 0.8370 | 0.8285 | −0.0085 ▼ | 995.13 | 750.24 |
+| 18 | 0.8296 | 0.8266 | −0.0030 ▼ | 798.60 | 555.58 |
+| 19 | 0.8243 | 0.8308 | +0.0065 ▲ | 1117.30 | 627.70 |
+
+WBP-K=1 wins on val accuracy: **15/22 seeds**. WBP-K=1 wins on sharpness: **22/22 seeds**.
+
+### Aggregate Statistics (N=22, sample std)
+
+| Metric | Adam mean ± std | WBP-K=1 mean ± std |
+|---|---|---|
+| Val accuracy | 0.8300 ± 0.0042 | 0.8332 ± 0.0042 |
+| Sharpness | 979.3 ± 137.1 | 624.1 ± 83.6 |
+
+### Bayesian Sigma Level (N=22)
+
+**Val accuracy** (d̄ = +0.00265, s = 0.00633, SNR = 0.42):
+
+| N seeds | Bayesian z |
+|---|---|
+| 4  | 1.96σ |
+| 10 | 1.73σ |
+| 22 | **2.34σ** |
+
+The SNR has stabilised near 0.42. At this rate, 4σ on val accuracy is projected to require approximately **72 total seeds** (~50 more from here).
+
+**Sharpness** (d̄ = +355.2, s = 160.5, SNR = 2.21):
+
+| N seeds | Bayesian z |
+|---|---|
+| 4  | 3.07σ |
+| 10 | 4.00σ |
+| 22 | **6.29σ** ✓ |
+
+Sharpness has crossed **6σ** at N=22. WBP-K=1 produced a flatter loss surface than Adam in every single one of the 22 seeds. This is the definitive result from this study.
+
+### Sigma Projections from N=22 estimates
+
+**Val accuracy:**
+
+| Target | N total needed | Additional seeds from current 22 |
+|---|---|---|
+| 4σ | ~72 | ~50 |
+| 5σ | ~121 | ~99 |
+| 6σ | ~183 | ~161 |
+
+**Sharpness:** already at 6.29σ — no further seeds needed.
+
+All projections assume d̄ and s remain at their N=22 values.
+
+---
+
+## Hybrid Training: Flatness Persistence Experiment (seed 0)
+
+**Question:** Is the sharpness reduction a property of the WBP-K=1 *training trajectory*, or can it be injected/removed by a single final epoch?
+
+Two conditions, both seed 0, 30 epochs total:
+- **29 Adam → 1 WBP-K=1**: train with Adam for 29 epochs, switch to WBP-K=1 for the final epoch
+- **29 WBP-K=1 → 1 Adam**: train with WBP-K=1 for 29 epochs, switch to Adam for the final epoch
+
+Phase-2 optimizers are initialised fresh at the switch point (no momentum carryover).
+
+### Results
+
+| Training regime | Val acc | Sharpness |
+|---|---|---|
+| Pure Adam × 30 | 0.8300 | 880.9 |
+| 29 Adam → 1 WBP-K=1 | 0.8259 | 844.4 |
+| 29 WBP-K=1 → 1 Adam | 0.8293 | 530.7 |
+| Pure WBP-K=1 × 30 | 0.8351 | 537.6 |
+
+### Interpretation
+
+One WBP-K=1 epoch appended to an Adam-trained model reduces sharpness by only 4%
+(880.9 → 844.4), leaving the model nearly as sharp as pure Adam.
+One Adam epoch appended to a WBP-K=1-trained model changes sharpness by less than 1%
+(537.6 → 530.7), leaving the model nearly as flat as pure WBP-K=1.
+
+The flatness is determined by the bulk of the training trajectory, not by the final step.
+
+---
+
+## Hybrid Training: Full Results (seeds 0–4)
+
+Seeds 1–4 added to confirm the seed-0 finding. Each seed contributes four runs:
+pure Adam × 30, 29 Adam → 1 WBP-K=1, 29 WBP-K=1 → 1 Adam, pure WBP-K=1 × 30.
+
+### Sharpness (Hutchinson trace)
+
+| Seed | Pure Adam | 29 Adam → 1 WBP | 29 WBP → 1 Adam | Pure WBP-K=1 |
+|---|---|---|---|---|
+| 0 | 880.9 | 844.4 | 530.7 | 537.6 |
+| 1 | 872.9 | 891.8 | 578.3 | 640.6 |
+| 2 | 1048.2 | 936.2 | 724.7 | 663.8 |
+| 3 | 1326.7 | 1395.1 | 650.7 | 639.1 |
+| 4 | 811.3 | 797.5 | 770.4 | 770.1 |
+| **Mean** | **988.0** | **973.0** | **650.9** | **650.3** |
+| **Std** | **208.7** | **241.6** | **99.3** | **82.8** |
+
+One WBP-K=1 epoch appended to Adam training: **−1.5%** change in sharpness (988 → 973).  
+One Adam epoch appended to WBP-K=1 training: **+0.1%** change in sharpness (650.3 → 650.9).
+
+### Val accuracy
+
+| Seed | Pure Adam | 29 Adam → 1 WBP | 29 WBP → 1 Adam | Pure WBP-K=1 |
+|---|---|---|---|---|
+| 0 | 0.8300 | 0.8259 | 0.8293 | 0.8351 |
+| 1 | 0.8319 | 0.8292 | 0.8287 | 0.8328 |
+| 2 | 0.8321 | 0.8273 | 0.8335 | 0.8344 |
+| 3 | 0.8344 | 0.8342 | 0.8263 | 0.8299 |
+| 4 | 0.8295 | 0.8218 | 0.8361 | 0.8255 |
+| **Mean** | **0.8316** | **0.8277** | **0.8308** | **0.8315** |
+
+### Interpretation
+
+The sharpness is set by whichever optimizer runs for 29 epochs, not by the final epoch:
+
+- Switching from Adam to WBP-K=1 for epoch 30 leaves the model almost exactly as sharp as pure Adam (−1.5%). The single WBP epoch does not inject flatness.
+- Switching from WBP-K=1 to Adam for epoch 30 leaves the model almost exactly as flat as pure WBP-K=1 (+0.1%). The single Adam epoch does not destroy flatness.
+
+The flatness reduction is a structural property of the WBP-K=1 training trajectory accumulated over the full training run, not a local artifact of the final gradient step.
+
+---
+
+## Sharpness Trajectory: Per-Epoch Measurement (seed 5)
+
+Adam and WBP-K=1 were run on seed 5 with the Hutchinson sharpness estimator applied after
+every epoch. This reveals *when* during training the two methods diverge in loss surface geometry.
+
+### Per-Epoch Sharpness (seed 5)
+
+| Epoch | Adam | WBP-K=1 | WBP/Adam ratio |
+|---|---|---|---|
+| 1 | 2103.9 | 1149.9 | 0.547 |
+| 2 | 2188.6 | 2253.0 | 1.029 |
+| 3 | 2020.7 | 1678.0 | 0.830 |
+| 4 | 1386.7 | 1450.9 | 1.046 |
+| 5 | 1945.3 | 1239.1 | 0.637 |
+| 6 | 1987.1 | 1481.1 | 0.745 |
+| 7 | 1970.1 | 1197.3 | 0.608 |
+| 8 | 2159.9 | 1058.1 | 0.490 |
+| 9 | 1604.1 | 668.8 | 0.417 |
+| 10 | 1431.7 | 1075.7 | 0.751 |
+| 11 | 1669.8 | 956.5 | 0.573 |
+| 12 | 1949.3 | 877.8 | 0.450 |
+| 13 | 1575.0 | 1111.2 | 0.706 |
+| 14 | 1526.3 | 585.5 | 0.384 |
+| 15 | 1234.6 | 769.9 | 0.624 |
+| 16 | 1376.0 | 597.3 | 0.434 |
+| 17 | 927.6 | 728.8 | 0.786 |
+| 18 | 841.1 | 624.6 | 0.743 |
+| 19 | 1152.7 | 781.9 | 0.678 |
+| 20 | 1173.9 | 512.2 | 0.436 |
+| 21 | 907.5 | 619.0 | 0.682 |
+| 22 | 1066.9 | 764.8 | 0.717 |
+| 23 | 899.7 | 711.9 | 0.791 |
+| 24 | 1142.4 | 792.7 | 0.694 |
+| 25 | 971.7 | 474.3 | 0.488 |
+| 26 | 1052.1 | 850.3 | 0.808 |
+| 27 | 1129.8 | 635.5 | 0.562 |
+| 28 | 903.6 | 574.0 | 0.635 |
+| 29 | 1161.2 | 605.3 | 0.521 |
+| 30 | 882.0 | 606.4 | 0.687 |
+
+See `sharpness_trajectory_5.png` for the graph.
+
+Both methods begin training in a very sharp region (~1500–2200). WBP-K=1 separates clearly
+from Adam starting around epoch 8–9 and maintains a consistently flatter profile for the
+remainder of training. The WBP/Adam ratio is below 1.0 in 28 of 30 epochs (the two exceptions,
+epochs 2 and 4, are small and early when both methods are still highly noisy). Adam's sharpness
+also declines over training but plateaus in the 850–1200 range; WBP-K=1 continues to lower
+sharpness and stabilises in the 500–850 range.
+
+---
+
+## Hybrid Training: Updated Table (seeds 0–5)
+
+Seed 5 added to the persistence experiment. Final sharpness for seed 5 from the
+per-epoch trajectory run (above).
+
+### Sharpness
+
+| Seed | Pure Adam | 29 Adam → 1 WBP | 29 WBP → 1 Adam | Pure WBP-K=1 |
+|---|---|---|---|---|
+| 0 | 880.9 | 844.4 | 530.7 | 537.6 |
+| 1 | 872.9 | 891.8 | 578.3 | 640.6 |
+| 2 | 1048.2 | 936.2 | 724.7 | 663.8 |
+| 3 | 1326.7 | 1395.1 | 650.7 | 639.1 |
+| 4 | 811.3 | 797.5 | 770.4 | 770.1 |
+| 5 | 882.0 | 880.4 | 511.7 | 606.4 |
+| **Mean** | **970.3** | **957.6** | **627.7** | **643.0** |
+| **Std** | **191.6** | **219.4** | **105.4** | **76.2** |
+
+One WBP-K=1 epoch appended to Adam: **−1.3%** change from pure Adam (970.3 → 957.6).  
+One Adam epoch appended to WBP-K=1: **−2.4%** change from pure WBP (643.0 → 627.7, slightly flatter on average — within noise).
+
+### Val accuracy
+
+| Seed | Pure Adam | 29 Adam → 1 WBP | 29 WBP → 1 Adam | Pure WBP-K=1 |
+|---|---|---|---|---|
+| 0 | 0.8300 | 0.8259 | 0.8293 | 0.8351 |
+| 1 | 0.8319 | 0.8292 | 0.8287 | 0.8328 |
+| 2 | 0.8321 | 0.8273 | 0.8335 | 0.8344 |
+| 3 | 0.8344 | 0.8342 | 0.8263 | 0.8299 |
+| 4 | 0.8295 | 0.8218 | 0.8361 | 0.8255 |
+| 5 | 0.8330 | 0.8261 | 0.8370 | 0.8296 |
+| **Mean** | **0.8318** | **0.8274** | **0.8318** | **0.8312** |
+
+The conclusion from seeds 0–4 holds at N=6: flatness is a property of the bulk training
+trajectory and is neither injected nor destroyed by a single final epoch.
